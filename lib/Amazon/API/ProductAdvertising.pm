@@ -166,6 +166,23 @@ sub _build_searchitems_url {
   return join '/', $self->base_url, $self->api_path, $self->searchitems_path;
 }
 
+has getitems_path => (
+  is => 'ro',
+  isa => 'Str',
+  default => 'searchitems',
+);
+
+has getitems_url => (
+  is => 'ro',
+  isa => 'Str',
+  lazy_build => 1,
+);
+
+sub _build_getitems_url {
+  my $self = shift;
+
+  return join '/', $self->base_url, $self->api_path, $self->getitems_path;
+}
 has ua => (
   is => 'ro',
   isa => 'LWP::UserAgent',
@@ -198,23 +215,37 @@ sub _build_signer {
 sub searchitems {
   my $self = shift;
 
-  my $endpoint = $self->searchitems_url;
+  return $self->request('searchitems', @_);
+}
+
+sub getitems {
+  my $self = shift;
+
+  return $self->request('getitems', @_);
+}
+
+sub request {
+  my $self = shift;
+  my ($operation, $params) = @_;
+
+  my $url_method = $operation . '_url';
+  my $tgt_method = $operation . '_target';
+
+  my $endpoint = $self->$url_method;
 
   my $req = HTTP::Request->new(POST => $endpoint);
   $req->header('X-Amz-Date' => $self->amz_date);
-  $req->header('X-Amz-Target' => $self->searchitems_target);
+  $req->header('X-Amz-Target' => $self->$tgt_method);
   $req->header(Host => $self->host);
   $req->header(Content_type => 'application/json; charset=UTF-8');
   $req->header(Content_encoding => 'amz-1.0');
 
-  my $params = {
+  $params //= {
     Marketplace => $self->marketplace,
     PartnerType => $self->partner_type,
     PartnerTag  => $self->partner_tag,
     # Hardcoded stuff for now...
     Keywords    => 'kindle',
-    SearchIndex => 'All',
-    ItemCount   => 3,
     Resources   => [
       "Images.Primary.Large", "ItemInfo.Title", "Offers.Listings.Price",
     ],
@@ -242,6 +273,12 @@ sub searchitems_target {
   my $self = shift;
 
   return $self->target . '.SearchItems';
+}
+
+sub getitems_target {
+  my $self = shift;
+
+  return $self->target . '.GetItems';
 }
 
 has target => (
