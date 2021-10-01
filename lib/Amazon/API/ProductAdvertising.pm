@@ -1,4 +1,4 @@
-package Amazon::ProductAdvertising::API;
+package Amazon::API::ProductAdvertising;
 
 use Moose;
 use Moose::Util::TypeConstraints;

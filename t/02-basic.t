@@ -3,7 +3,7 @@ use warnings;
 
 use Test::More;
 
-use Amazon::ProductAdvertising::API;
+use Amazon::API::ProductAdvertising;
 
 my $attr2env = {
   partner_tag => 'AMAZON_ASSTAG',
@@ -13,9 +13,9 @@ my $attr2env = {
 
 my %new_params = map { $_ => $ENV{$attr2env->{$_}} } keys %$attr2env;
 
-ok my $api = Amazon::ProductAdvertising::API->new( \%new_params ),
+ok my $api = Amazon::API::ProductAdvertising->new( \%new_params ),
    'Got an object';
-isa_ok $api, 'Amazon::ProductAdvertising::API';
+isa_ok $api, 'Amazon::API::ProductAdvertising';
 
 for (keys %$attr2env) {
   is $api->$_, $ENV{$attr2env->{$_}}, "$_ is correct";

@@ -3,6 +3,6 @@ use warnings;
 
 use Test::More;
 
-use_ok('Amazon::ProductAdvertising::API');
+use_ok('Amazon::API::ProductAdvertising');
 
 done_testing;
