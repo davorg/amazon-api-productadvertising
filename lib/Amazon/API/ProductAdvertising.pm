@@ -7,6 +7,7 @@ use HTTP::Headers;
 use HTTP::Request;
 use Net::Amazon::Signature::V4;
 use Time::Piece;
+use JSON;
 
 my %locale = (
   'Australia'            => {
@@ -206,9 +207,29 @@ sub searchitems {
   $req->header(Content_type => 'application/json; charset=UTF-8');
   $req->header(Content_encoding => 'amz-1.0');
 
+  my $params = {
+    Marketplace => $self->marketplace,
+    PartnerType => $self->partner_type,
+    PartnerTag  => $self->partner_tag,
+    # Hardcoded stuff for now...
+    Keywords    => 'kindle',
+    SearchIndex => 'All',
+    ItemCount   => 3,
+    Resources   => [
+      "Images.Primary.Large", "ItemInfo.Title", "Offers.Listings.Price",
+    ],
+  };
+
+  my $content = $self->json->encode($params);
+  $req->content($content);
+
   $req = $self->signer->sign($req);
 
   warn $req->as_string;
+
+  my $resp = $self->ua->request($req);
+
+  warn $resp->content;
 }
 
 sub amz_date {
@@ -228,5 +249,15 @@ has target => (
   isa => 'Str',
   default => 'com.amazon.paapi5.v1.ProductAdvertisingAPIv1',
 );
+
+has json => (
+  is => 'ro',
+  isa => 'JSON',
+  lazy_build => 1,
+);
+
+sub _build_json {
+  return JSON->new;
+}
 
 1;
