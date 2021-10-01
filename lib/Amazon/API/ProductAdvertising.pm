@@ -3,7 +3,6 @@ package Amazon::API::ProductAdvertising;
 use Moose;
 use Moose::Util::TypeConstraints;
 use LWP::UserAgent;
-use HTTP::Headers;
 use HTTP::Request;
 use Net::Amazon::Signature::V4;
 use Time::Piece;
