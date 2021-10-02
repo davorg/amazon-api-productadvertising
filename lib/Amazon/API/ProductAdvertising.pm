@@ -239,16 +239,17 @@ sub request {
   $req->header(Content_type => 'application/json; charset=UTF-8');
   $req->header(Content_encoding => 'amz-1.0');
 
-  $params //= {
-    Marketplace => $self->marketplace,
-    PartnerType => $self->partner_type,
-    PartnerTag  => $self->partner_tag,
-    # Hardcoded stuff for now...
-    Keywords    => 'kindle',
-    Resources   => [
-      "Images.Primary.Large", "ItemInfo.Title", "Offers.Listings.Price",
-    ],
-  };
+  $params //= {};
+
+  $params->{Marketplace} => $self->marketplace;
+  $params->{PartnerType} => $self->partner_type;
+  $params->{PartnerTag}  => $self->partner_tag;
+
+  # Hardcoded stuff for now...
+  $params->{Keywords}  //= 'kindle';
+  $params->{Resources} //= [
+    "Images.Primary.Large", "ItemInfo.Title", "Offers.Listings.Price",
+  ];
 
   my $content = $self->json->encode($params);
   $req->content($content);
@@ -259,7 +260,12 @@ sub request {
 
   my $resp = $self->ua->request($req);
 
-  warn $resp->content;
+  my $data = $self->json->decode($resp->content);
+
+  use Data::Dumper;
+  warn Dumper $data;
+
+  return $data;
 }
 
 sub amz_date {
