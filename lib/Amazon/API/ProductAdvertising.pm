@@ -241,9 +241,9 @@ sub request {
 
   $params //= {};
 
-  $params->{Marketplace} => $self->marketplace;
-  $params->{PartnerType} => $self->partner_type;
-  $params->{PartnerTag}  => $self->partner_tag;
+  $params->{Marketplace} = $self->marketplace;
+  $params->{PartnerType} = $self->partner_type;
+  $params->{PartnerTag}  = $self->partner_tag;
 
   # Hardcoded stuff for now...
   $params->{Keywords}  //= 'kindle';
